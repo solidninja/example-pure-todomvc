@@ -19,7 +19,7 @@ lazy val server = Project(
 ).settings(
   commonSettings,
   Seq(
-    libraryDependencies ++= circe ++ doobie ++ http4sJvm ++ fs2 ++ scalatest ++ testBlazeHttp ++ runtimeLogging,
+    libraryDependencies ++= `cats-effect` ++ circe ++ doobie ++ http4sJvm ++ scalatest ++ testBlazeHttp ++ runtimeLogging,
     scalafmtOnCompile := true
   )
 ).dependsOn(protocol)

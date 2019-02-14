@@ -5,14 +5,12 @@ package server
 
 import java.util.UUID
 
-import cats.effect.IO
+import cats.effect._
 import cats.implicits._
-
 import doobie._
-import doobie.implicits._
 import doobie.h2._
 import doobie.h2.implicits._
-
+import doobie.implicits._
 import is.solidninja.todomvc.protocol._
 
 trait TodoDatabase {
@@ -26,14 +24,21 @@ trait TodoDatabase {
 
 object DoobieTodoDatabase {
 
-  val create: IO[DoobieTodoDatabase] =
+  def h2Transactor(implicit cs: ContextShift[IO]): Resource[IO, H2Transactor[IO]] =
     for {
-      xa <- H2Transactor[IO]("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "sa", "")
-      _ <- xa.setMaxConnections(10)
-      db = new DoobieTodoDatabase(xa)
-      _ <- db.init
-    } yield db
+      ce <- ExecutionContexts.fixedThreadPool[IO](32) // our connect EC
+      te <- ExecutionContexts.cachedThreadPool[IO] // our transaction EC
+      xa <- H2Transactor.newH2Transactor[IO]("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "sa", "", ce, te)
+    } yield xa
 
+  def create(implicit cs: ContextShift[IO]): Resource[IO, DoobieTodoDatabase] =
+    h2Transactor.evalMap { xa =>
+      for {
+        _ <- xa.setMaxConnections(10)
+        db = new DoobieTodoDatabase(xa)
+        _ <- db.init
+      } yield db
+    }
 }
 
 class DoobieTodoDatabase(xa: Transactor[IO]) extends TodoDatabase with TodoDatabaseQueries {
@@ -49,7 +54,7 @@ class DoobieTodoDatabase(xa: Transactor[IO]) extends TodoDatabase with TodoDatab
   }
 
   val list: IO[List[Todo]] =
-    listQuery.list.transact(xa)
+    listQuery.to[List].transact(xa)
 
   def find(id: UUID): IO[Option[Todo]] =
     findQuery(id).option.transact(xa)

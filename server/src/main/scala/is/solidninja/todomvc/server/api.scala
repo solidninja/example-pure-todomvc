@@ -8,17 +8,14 @@ import java.util.UUID
 import scala.util.Try
 
 import cats.effect._
-
 import io.circe._
 import io.circe.syntax._
-
-import org.http4s._
-import org.http4s.dsl._
-
 import is.solidninja.todomvc.protocol._
+import org.http4s._
+import org.http4s.dsl.Http4sDsl
 
 object ApiModel {
-  import io.circe.generic.semiauto._
+  import _root_.io.circe.generic.semiauto._
 
   case class NewTodo(title: String, completed: Boolean) {
     def withRandomUuid: Todo = Todo(title, completed, UUID.randomUUID())
@@ -27,10 +24,10 @@ object ApiModel {
   implicit val decodeNewTodo: Decoder[NewTodo] = deriveDecoder
 }
 
-object API {
-  import org.http4s.circe._
-  import JsonProtocol._
+object API extends Http4sDsl[IO] {
   import ApiModel._
+  import JsonProtocol._
+  import org.http4s.circe._
 
   private implicit val entityDecoderForNewTodo = jsonOf[IO, NewTodo]
   private implicit val entityDecoderForTodoList = jsonOf[IO, List[Todo]]
@@ -40,13 +37,13 @@ object API {
       if (!str.isEmpty) Try(UUID.fromString(str)).toOption else None
   }
 
-  def todoService(db: TodoDatabase) = HttpService[IO] {
+  def todoService(db: TodoDatabase) = HttpRoutes.of[IO] {
     case GET -> Root / "todo" =>
       db.list.flatMap(okJson[List[Todo]])
     case GET -> Root / "todo" / UuidVar(id) =>
       db.find(id).flatMap {
         case Some(todo) => okJson(todo)
-        case None => NotFound()
+        case None       => NotFound()
       }
     case req @ POST -> Root / "todo" =>
       req.decode[NewTodo] { todo =>
@@ -69,7 +66,7 @@ object API {
     case DELETE -> Root / "todo" / UuidVar(id) =>
       db.delete(id).flatMap {
         case true => Ok(())
-        case _ => NotFound()
+        case _    => NotFound()
       }
   }
 

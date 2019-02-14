@@ -1,2 +1,2 @@
-addSbtPlugin("io.get-coursier" % "sbt-coursier" % "1.0.0-RC11")
-addSbtPlugin("com.lucidchart" % "sbt-scalafmt-coursier" % "1.10")
+addSbtPlugin("io.get-coursier" % "sbt-coursier" % "1.0.2")
+addSbtPlugin("com.geirsson" % "sbt-scalafmt" % "1.5.1")

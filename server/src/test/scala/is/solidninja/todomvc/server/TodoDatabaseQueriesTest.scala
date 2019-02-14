@@ -2,8 +2,6 @@ package is.solidninja.todomvc.server
 
 import java.util.UUID
 
-import cats.effect.IO
-import doobie.h2._
 import doobie.implicits._
 import doobie.scalatest._
 import is.solidninja.todomvc.protocol.Todo
@@ -11,10 +9,12 @@ import org.scalatest.{FreeSpec, Matchers}
 
 class TodoDatabaseQueriesTest extends FreeSpec with Matchers with IOChecker with TodoDatabaseQueries {
 
-  override val transactor = unsafeRunSync(for {
-    xa <- H2Transactor[IO]("jdbc:h2:mem:todo_test;DB_CLOSE_DELAY=-1", "sa", "")
+  implicit val cs = cats.effect.IO.contextShift(scala.concurrent.ExecutionContext.global)
+
+  override val transactor = (for {
+    xa <- DoobieTodoDatabase.h2Transactor.allocated.map(_._1)
     _ <- createTableQuery.run.transact(xa)
-  } yield xa)
+  } yield xa).unsafeRunSync()
 
   val sampleTodo = Todo("check query in doobie unit test", completed = true)
 

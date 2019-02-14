@@ -1,35 +1,43 @@
 import sbt._
 
 object Dependencies {
+  
+  object Versions {
+    val `cats-effect` = "1.2.0"
+    val circe = "0.11.1"
+    val doobie = "0.7.0-M2" 
+    val http4s = "0.20.0-M5"
+  }
+  
   val http4sJvm = Seq(
-    "org.http4s" %% "http4s-dsl" % "0.18.0-M1",
-    "org.http4s" %% "http4s-circe" % "0.18.0-M1",
-    "org.http4s" %% "http4s-blaze-client" % "0.18.0-M1",
-    "org.http4s" %% "http4s-blaze-server" % "0.18.0-M1",
+    "org.http4s" %% "http4s-dsl" % Versions.http4s,
+    "org.http4s" %% "http4s-circe" % Versions.http4s,
+    "org.http4s" %% "http4s-blaze-client" % Versions.http4s,
+    "org.http4s" %% "http4s-blaze-server" % Versions.http4s,
   )
 
+  val `cats-effect` = Seq(
+    "org.typelevel" %% "cats-effect" % Versions.`cats-effect`
+  )
+  
   val circe = Seq(
-    "io.circe" %% "circe-literal" % "0.9.0-M1",
-    "io.circe" %% "circe-generic" % "0.9.0-M1",
+    "io.circe" %% "circe-literal" % Versions.circe,
+    "io.circe" %% "circe-generic" % Versions.circe,
   )
 
   val doobie = Seq(
-    "org.tpolecat" %% "doobie-core" % "0.5.0-M6",
-    "org.tpolecat" %% "doobie-h2" % "0.5.0-M6",
-    "org.tpolecat" %% "doobie-hikari" % "0.5.0-M6",
-  )
-
-  val fs2 = Seq(
-    "co.fs2" %% "fs2-core" % "0.10.0-M6",
+    "org.tpolecat" %% "doobie-core" % Versions.doobie,
+    "org.tpolecat" %% "doobie-h2" % Versions.doobie,
+    "org.tpolecat" %% "doobie-hikari" % Versions.doobie,
   )
 
   val scalatest = Seq(
-    "org.scalatest" %% "scalatest" % "3.0.3" % "test",
-    "org.tpolecat" %% "doobie-scalatest" % "0.5.0-M6" % "test",
+    "org.scalatest" %% "scalatest" % "3.0.5" % Test,
+    "org.tpolecat" %% "doobie-scalatest" % Versions.doobie % Test,
   )
 
   val testBlazeHttp = Seq(
-    "org.http4s" %% "http4s-blaze-client" % "0.18.0-M1" % "test",
+    "org.http4s" %% "http4s-blaze-client" % Versions.http4s % Test,
   )
 
   val runtimeLogging = Seq(

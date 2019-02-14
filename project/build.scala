@@ -22,7 +22,7 @@ object build {
   val commonSettings = Seq(
     organization := "is.solidninja.todomvc",
     version := "0.0.1-SNAPSHOT",
-    scalaVersion := "2.12.3",
+    scalaVersion := "2.12.8",
     scalacOptions ++= Seq(
       "-deprecation",
       "-encoding",
@@ -39,7 +39,8 @@ object build {
       "-Ywarn-numeric-widen",
       "-Ywarn-value-discard",
       "-Xfuture",
-      "-Ywarn-unused-import"
+      "-Ywarn-unused-import",
+      "-Ypartial-unification",
     ),
     javacOptions ++= Seq("-target", "1.8", "-source", "1.8"),
     manifestSetting,
