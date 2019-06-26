@@ -28,7 +28,8 @@ object DoobieTodoDatabase {
     for {
       ce <- ExecutionContexts.fixedThreadPool[IO](32) // our connect EC
       te <- ExecutionContexts.cachedThreadPool[IO] // our transaction EC
-      xa <- H2Transactor.newH2Transactor[IO]("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "sa", "", ce, te)
+      block = Blocker.liftExecutionContext(te)
+      xa <- H2Transactor.newH2Transactor[IO]("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "sa", "", ce, block)
     } yield xa
 
   def create(implicit cs: ContextShift[IO]): Resource[IO, DoobieTodoDatabase] =

@@ -3,10 +3,11 @@ import sbt._
 object Dependencies {
   
   object Versions {
-    val `cats-effect` = "1.2.0"
-    val circe = "0.11.1"
-    val doobie = "0.7.0-M2" 
-    val http4s = "0.20.0-M5"
+    val `cats-effect` = "2.0.0-M4"
+    val circe = "0.12.0-M3"
+    val doobie = "0.8.0-M1"
+    val http4s = "0.21.0-M1"
+    val scalatest = "3.0.8"
   }
   
   val http4sJvm = Seq(
@@ -32,7 +33,7 @@ object Dependencies {
   )
 
   val scalatest = Seq(
-    "org.scalatest" %% "scalatest" % "3.0.5" % Test,
+    "org.scalatest" %% "scalatest" % Versions.scalatest % Test,
     "org.tpolecat" %% "doobie-scalatest" % Versions.doobie % Test,
   )
 
