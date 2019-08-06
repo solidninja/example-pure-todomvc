@@ -18,7 +18,7 @@ object ApiModel {
   import _root_.io.circe.generic.semiauto._
 
   case class NewTodo(title: String, completed: Boolean) {
-    def withRandomUuid: Todo = Todo(title, completed, UUID.randomUUID())
+    def withRandomUuid: Todo = Todo(UUID.randomUUID(), title, completed)
   }
 
   implicit val decodeNewTodo: Decoder[NewTodo] = deriveDecoder
@@ -37,7 +37,7 @@ object API extends Http4sDsl[IO] {
       if (!str.isEmpty) Try(UUID.fromString(str)).toOption else None
   }
 
-  def todoService(db: TodoDatabase) = HttpRoutes.of[IO] {
+  def todoService(db: TodoDatabase[IO]) = HttpRoutes.of[IO] {
     case GET -> Root / "todo" =>
       db.list.flatMap(okJson[List[Todo]])
     case GET -> Root / "todo" / UuidVar(id) =>
