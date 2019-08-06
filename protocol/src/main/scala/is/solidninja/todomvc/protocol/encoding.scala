@@ -6,12 +6,8 @@ package protocol
 import io.circe._
 import io.circe.generic.semiauto._
 
-trait EncoderInstances {
-  implicit val encodeTodo: Encoder[Todo] = deriveEncoder
+trait JsonProtocol {
+  implicit val todoCodec: Codec[Todo] = deriveCodec
 }
 
-trait DecoderInstances {
-  implicit val decodeTodo: Decoder[Todo] = deriveDecoder
-}
-
-object JsonProtocol extends EncoderInstances with DecoderInstances
+object JsonProtocol extends JsonProtocol
