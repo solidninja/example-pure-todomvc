@@ -5,19 +5,26 @@ package server
 
 import cats.effect.IO
 import org.http4s._
+import org.scalatest.{Matchers, Suite}
 
-object Http4sSpec {
+trait Http4sSpec extends Matchers { self: Suite =>
 
-  // Return true if match succeeds; otherwise false
-  def check[A](actual: IO[Response[IO]], expectedStatus: Status, expectedBody: Option[A])(
+  /**
+    * Check http4s response against an expected status code and an (optional) body
+    */
+  def checkResponse[A](actual: IO[Response[IO]], expectedStatus: Status, expectedBody: Option[A])(
       implicit ev: EntityDecoder[IO, A]
-  ): Boolean = {
-    val actualResp = actual.unsafeRunSync
-    val statusCheck = actualResp.status == expectedStatus
-    val bodyCheck =
-      expectedBody.fold[Boolean](actualResp.body.compile.toVector.unsafeRunSync.isEmpty)( // Verify Response's body is empty.
-        expected => actualResp.as[A].unsafeRunSync == expected
+  ): Unit = {
+    val gotResponse = actual.unsafeRunSync
+    withClue("HTTP status") {
+      gotResponse.status should ===(expectedStatus)
+    }
+
+    withClue("HTTP body") {
+      expectedBody.fold[Unit](gotResponse.body.compile.toVector.unsafeRunSync should be(empty))(
+        expected => gotResponse.as[A].unsafeRunSync should ===(expected)
       )
-    statusCheck && bodyCheck
+    }
   }
+
 }

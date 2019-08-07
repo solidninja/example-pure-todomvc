@@ -16,8 +16,7 @@ import org.http4s.dsl.io.GET
 import org.http4s.implicits._
 import org.scalatest.{FreeSpec, Matchers}
 
-class TodoAPITest extends FreeSpec with Matchers {
-  import Http4sSpec._
+class TodoAPITest extends FreeSpec with Matchers with Http4sSpec {
   import org.http4s.circe._
 
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
@@ -31,7 +30,7 @@ class TodoAPITest extends FreeSpec with Matchers {
 
       val expected = json"[]"
 
-      check(response, Status.Ok, Some(expected))
+      checkResponse(response, Status.Ok, Some(expected))
     }
 
     "should return some TODOs when database contains them" in {
@@ -57,7 +56,7 @@ class TodoAPITest extends FreeSpec with Matchers {
         }
       ]"""
 
-      check(response, Status.Ok, Some(expected))
+      checkResponse(response, Status.Ok, Some(expected))
     }
   }
 }
