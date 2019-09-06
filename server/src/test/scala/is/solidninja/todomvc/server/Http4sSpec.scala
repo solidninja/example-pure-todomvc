@@ -21,7 +21,7 @@ trait Http4sSpec extends Matchers { self: Suite =>
     }
 
     withClue("HTTP body") {
-      expectedBody.fold[Unit](gotResponse.body.compile.toVector.unsafeRunSync should be(empty))(
+      val _ = expectedBody.fold[Any](gotResponse.body.compile.toVector.unsafeRunSync should be(empty))(
         expected => gotResponse.as[A].unsafeRunSync should ===(expected)
       )
     }
