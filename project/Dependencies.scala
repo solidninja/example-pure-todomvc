@@ -4,9 +4,9 @@ object Dependencies {
 
   object Versions {
     val `cats-effect` = "2.0.0"
-    val circe = "0.12.1"
-    val doobie = "0.8.2"
-    val http4s = "0.21.0-M4"
+    val circe = "0.12.3"
+    val doobie = "0.8.4"
+    val http4s = "0.21.0-M5"
     val scalatest = "3.0.8"
   }
 
